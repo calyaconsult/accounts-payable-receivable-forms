@@ -89,6 +89,8 @@ Feel free to fork this repository and submit pull requests with improvements. Su
 
 This project is open source and available under the MIT License.
 
-## Author
+## Creator
+
+Qwen3-Coder
 
 Created to help streamline financial data entry workflows with a focus on usability and data integrity.
