@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Payable Invoice Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h2 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .status-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .status-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .status-option input[type="radio"] {
+            display: none;
+        }
+
+        .status-option label {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            border: 2px solid #ddd;
+        }
+
+        .status-option input[type="radio"]:checked + label {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+        }
+
+        .aging-bucket {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .bucket {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .bucket input[type="radio"] {
+            display: none;
+        }
+
+        .bucket label {
+            display: block;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            border: 2px solid #ddd;
+        }
+
+        .bucket input[type="radio"]:checked + label {
+            background: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        footer {
+            padding: 25px 30px;
+            background: #ecf0f1;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 10px;
+        }
+
+        .btn-submit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit:hover {
+            background: #2980b9;
+        }
+
+        .btn-reset:hover {
+            background: #c0392b;
+        }
+
+        .highlight {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .json-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+            display: none;
+        }
+
+        .json-output h3 {
+            margin-bottom: 15px;
+            color: #3498db;
+            text-align: center;
+        }
+
+        .json-output.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .status-options, .aging-bucket {
+                flex-direction: column;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-file-invoice-dollar"></i> Accounts Payable Invoice Form</h1>
+            <p>Manage vendor invoices and payment processing</p>
+        </header>
+
+        <form id="invoiceForm">
+            <div class="form-container">
+                <!-- Invoice Information -->
+                <div class="form-section">
+                    <h2><i class="fas fa-info-circle"></i> Invoice Details</h2>
+
+                    <div class="form-group">
+                        <label for="invoiceNumber">Invoice Number</label>
+                        <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="INV-2023-001" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceDate">Invoice Date</label>
+                            <input type="date" id="invoiceDate" name="invoiceDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dueDate">Due Date</label>
+                            <input type="date" id="dueDate" name="dueDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paymentDate">Payment Date</label>
+                            <input type="date" id="paymentDate" name="paymentDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="daysOutstanding">Days Outstanding</label>
+                            <input type="number" id="daysOutstanding" name="daysOutstanding" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="poNumber">PO Number</label>
+                        <input type="text" id="poNumber" name="poNumber" placeholder="PO-2023-123">
+                    </div>
+                </div>
+
+                <!-- Vendor Information -->
+                <div class="form-section">
+                    <h2><i class="fas fa-building"></i> Vendor Information</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vendorId">Vendor ID</label>
+                            <input type="text" id="vendorId" name="vendorId" placeholder="VEND-001" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vendorName">Vendor Name</label>
+                            <input type="text" id="vendorName" name="vendorName" placeholder="ABC Supplies Inc." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payingAccount">Paying Account</label>
+                        <select id="payingAccount" name="payingAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="operating">Operating Account</option>
+                            <option value="credit">Credit Card Account</option>
+                            <option value="special">Special Projects Account</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Financial Details -->
+                <div class="form-section">
+                    <h2><i class="fas fa-money-bill-wave"></i> Financial Details</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amountChf">Amount (CHF)</label>
+                            <input type="number" id="amountChf" name="amountChf" step="0.01" placeholder="1000.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency" name="currency" required>
+                                <option value="">Select Currency</option>
+                                <option value="CHF" selected>CHF - Swiss Franc</option>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="JPY">JPY - Japanese Yen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amountPaid">Amount Paid</label>
+                            <input type="number" id="amountPaid" name="amountPaid" step="0.01" placeholder="800.00">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="balanceDue">Balance Due</label>
+                            <input type="number" id="balanceDue" name="balanceDue" step="0.01" placeholder="200.00" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Aging Bucket</label>
+                        <div class="aging-bucket">
+                            <div class="bucket">
+                                <input type="radio" id="current" name="agingBucket" value="Current">
+                                <label for="current">Current</label>
+                            </div>
+                            <div class="bucket">
+                                <input type="radio" id="30days" name="agingBucket" value="30 Days">
+                                <label for="30days">30 Days</label>
+                            </div>
+                            <div class="bucket">
+                                <input type="radio" id="60days" name="agingBucket" value="60 Days">
+                                <label for="60days">60 Days</label>
+                            </div>
+                            <div class="bucket">
+                                <input type="radio" id="90days" name="agingBucket" value="90+ Days">
+                                <label for="90days">90+ Days</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status and Notes -->
+                <div class="form-section">
+                    <h2><i class="fas fa-tasks"></i> Status & Notes</h2>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="status-options">
+                            <div class="status-option">
+                                <input type="radio" id="pending" name="status" value="Pending" checked>
+                                <label for="pending">Pending</label>
+                            </div>
+                            <div class="status-option">
+                                <input type="radio" id="approved" name="status" value="Approved">
+                                <label for="approved">Approved</label>
+                            </div>
+                            <div class="status-option">
+                                <input type="radio" id="paid" name="status" value="Paid">
+                                <label for="paid">Paid</label>
+                            </div>
+                            <div class="status-option">
+                                <input type="radio" id="overdue" name="status" value="Overdue">
+                                <label for="overdue">Overdue</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" name="notes" placeholder="Add any additional notes about this invoice..."></textarea>
+                    </div>
+
+                    <div class="highlight">
+                        <p><strong>Balance Due:</strong> CHF <span id="displayBalance">0.00</span></p>
+                        <p><strong>Days Outstanding:</strong> <span id="displayDays">0</span> days</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Save Invoice</button>
+                <button type="reset" class="btn btn-reset"><i class="fas fa-redo"></i> Reset Form</button>
+            </footer>
+        </form>
+
+        <div id="jsonOutput" class="json-output">
+            <h3>Submitted Form Data (JSON)</h3>
+            <pre id="jsonData"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Calculate days outstanding
+        function calculateDaysOutstanding() {
+            const invoiceDate = new Date(document.getElementById('invoiceDate').value);
+            const dueDate = new Date(document.getElementById('dueDate').value);
+            const today = new Date();
+
+            if (invoiceDate && dueDate) {
+                const timeDiff = dueDate.getTime() - invoiceDate.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                document.getElementById('daysOutstanding').value = daysDiff;
+                document.getElementById('displayDays').textContent = daysDiff;
+            }
+        }
+
+        // Calculate balance due
+        function calculateBalanceDue() {
+            const invoiceAmount = parseFloat(document.getElementById('amountChf').value) || 0;
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+            const balance = invoiceAmount - amountPaid;
+            document.getElementById('balanceDue').value = balance.toFixed(2);
+            document.getElementById('displayBalance').textContent = balance.toFixed(2);
+        }
+
+        // Set today's date as default for invoice date
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceDate').value = today;
+
+            // Set due date to 30 days from today
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+
+            // Calculate initial values
+            calculateDaysOutstanding();
+            calculateBalanceDue();
+        });
+
+        // Event listeners
+        document.getElementById('invoiceDate').addEventListener('change', calculateDaysOutstanding);
+        document.getElementById('dueDate').addEventListener('change', calculateDaysOutstanding);
+        document.getElementById('amountChf').addEventListener('input', calculateBalanceDue);
+        document.getElementById('amountPaid').addEventListener('input', calculateBalanceDue);
+
+        // Form submission
+        document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Collect form data
+            const formData = new FormData(this);
+            const jsonData = {};
+
+            // Add all form fields to JSON object
+            for (const [key, value] of formData.entries()) {
+                jsonData[key] = value;
+            }
+
+            // Add calculated fields
+            jsonData.daysOutstanding = document.getElementById('daysOutstanding').value;
+            jsonData.balanceDue = document.getElementById('balanceDue').value;
+            jsonData.displayBalance = document.getElementById('displayBalance').textContent;
+            jsonData.displayDays = document.getElementById('displayDays').textContent;
+
+            // Get selected aging bucket
+            const agingBuckets = document.querySelectorAll('input[name="agingBucket"]:checked');
+            jsonData.agingBucket = agingBuckets.length ? agingBuckets[0].value : '';
+
+            // Get selected status
+            const statuses = document.querySelectorAll('input[name="status"]:checked');
+            jsonData.status = statuses.length ? statuses[0].value : '';
+
+            // Display JSON output
+            document.getElementById('jsonData').textContent = JSON.stringify(jsonData, null, 2);
+            document.getElementById('jsonOutput').classList.add('show');
+
+            // Scroll to JSON output
+            document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Reset form and hide JSON output
+        document.getElementById('invoiceForm').addEventListener('reset', function() {
+            document.getElementById('jsonOutput').classList.remove('show');
+            calculateDaysOutstanding();
+            calculateBalanceDue();
+        });
+    </script>
+</body>
+</html>
