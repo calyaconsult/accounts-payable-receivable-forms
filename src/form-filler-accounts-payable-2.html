@@ -462,16 +462,25 @@
     <script>
         // Calculate days outstanding
         function calculateDaysOutstanding() {
-            const invoiceDate = new Date(document.getElementById('invoiceDate').value);
-            const dueDate = new Date(document.getElementById('dueDate').value);
-            const today = new Date();
-
-            if (invoiceDate && dueDate) {
-                const timeDiff = dueDate.getTime() - invoiceDate.getTime();
-                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                document.getElementById('daysOutstanding').value = daysDiff;
-                document.getElementById('displayDays').textContent = daysDiff;
+            const dueDateValue = document.getElementById('dueDate').value;
+            if (!dueDateValue) {
+                document.getElementById('daysOutstanding').value = 0;
+                document.getElementById('displayDays').textContent = 0;
+                return;
             }
+            const dueDate = new Date(dueDateValue);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to midnight to compare dates only
+
+            let daysDiff = 0;
+            // Check if dueDate is a valid date and if it's in the past
+            if (!isNaN(dueDate.getTime()) && dueDate < today) {
+                const timeDiff = today.getTime() - dueDate.getTime();
+                daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            }
+
+            document.getElementById('daysOutstanding').value = daysDiff;
+            document.getElementById('displayDays').textContent = daysDiff;
         }
 
         // Calculate balance due
@@ -483,8 +492,7 @@
             document.getElementById('displayBalance').textContent = balance.toFixed(2);
         }
 
-        // Set today's date as default for invoice date
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializeForm() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('invoiceDate').value = today;
 
@@ -496,10 +504,12 @@
             // Calculate initial values
             calculateDaysOutstanding();
             calculateBalanceDue();
-        });
+        }
+
+        // Set up the form on initial load
+        document.addEventListener('DOMContentLoaded', initializeForm);
 
         // Event listeners
-        document.getElementById('invoiceDate').addEventListener('change', calculateDaysOutstanding);
         document.getElementById('dueDate').addEventListener('change', calculateDaysOutstanding);
         document.getElementById('amountChf').addEventListener('input', calculateBalanceDue);
         document.getElementById('amountPaid').addEventListener('input', calculateBalanceDue);
@@ -508,42 +518,33 @@
         document.getElementById('invoiceForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Collect form data
             const formData = new FormData(this);
             const jsonData = {};
 
-            // Add all form fields to JSON object
             for (const [key, value] of formData.entries()) {
                 jsonData[key] = value;
             }
 
-            // Add calculated fields
+            // Add calculated fields (but not redundant display fields)
             jsonData.daysOutstanding = document.getElementById('daysOutstanding').value;
             jsonData.balanceDue = document.getElementById('balanceDue').value;
-            jsonData.displayBalance = document.getElementById('displayBalance').textContent;
-            jsonData.displayDays = document.getElementById('displayDays').textContent;
 
-            // Get selected aging bucket
             const agingBuckets = document.querySelectorAll('input[name="agingBucket"]:checked');
             jsonData.agingBucket = agingBuckets.length ? agingBuckets[0].value : '';
 
-            // Get selected status
             const statuses = document.querySelectorAll('input[name="status"]:checked');
             jsonData.status = statuses.length ? statuses[0].value : '';
 
-            // Display JSON output
             document.getElementById('jsonData').textContent = JSON.stringify(jsonData, null, 2);
             document.getElementById('jsonOutput').classList.add('show');
-
-            // Scroll to JSON output
             document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth' });
         });
 
         // Reset form and hide JSON output
         document.getElementById('invoiceForm').addEventListener('reset', function() {
             document.getElementById('jsonOutput').classList.remove('show');
-            calculateDaysOutstanding();
-            calculateBalanceDue();
+            // Use a timeout to allow the native form reset to complete before re-initializing
+            setTimeout(initializeForm, 0);
         });
     </script>
 </body>

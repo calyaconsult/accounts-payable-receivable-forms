@@ -451,6 +451,11 @@
                         <label for="notes">Notes/Comments</label>
                         <textarea id="notes" name="notes" placeholder="Add any additional notes or comments about this invoice..."></textarea>
                     </div>
+
+                    <div class="highlight">
+                        <p><strong>Amount Outstanding:</strong> CHF <span id="displayOutstanding">0.00</span></p>
+                        <p><strong>Days Outstanding:</strong> <span id="displayDays">0</span> days</p>
+                    </div>
                 </div>
             </div>
 
@@ -469,14 +474,24 @@
     <script>
         // Calculate days outstanding
         function calculateDaysOutstanding() {
-            const invoiceDate = new Date(document.getElementById('invoiceDate').value);
-            const dueDate = new Date(document.getElementById('dueDate').value);
-
-            if (invoiceDate && dueDate) {
-                const timeDiff = dueDate.getTime() - invoiceDate.getTime();
-                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                document.getElementById('daysOutstanding').value = daysDiff;
+            const dueDateValue = document.getElementById('dueDate').value;
+            if (!dueDateValue) {
+                document.getElementById('daysOutstanding').value = 0;
+                document.getElementById('displayDays').textContent = 0;
+                return;
             }
+            const dueDate = new Date(dueDateValue);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to midnight for date-only comparison
+
+            let daysDiff = 0;
+            if (!isNaN(dueDate.getTime()) && dueDate < today) {
+                const timeDiff = today.getTime() - dueDate.getTime();
+                daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            }
+
+            document.getElementById('daysOutstanding').value = daysDiff;
+            document.getElementById('displayDays').textContent = daysDiff;
         }
 
         // Calculate outstanding amount
@@ -485,24 +500,25 @@
             const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
             const outstanding = invoiceAmount - amountPaid;
             document.getElementById('amountOutstanding').value = outstanding.toFixed(2);
+            document.getElementById('displayOutstanding').textContent = outstanding.toFixed(2);
         }
 
-        // Set today's date as default for invoice date
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializeForm() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('invoiceDate').value = today;
 
-            // Set due date to 30 days from today
             const dueDate = new Date();
             dueDate.setDate(dueDate.getDate() + 30);
             document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
 
-            // Calculate initial days outstanding
             calculateDaysOutstanding();
-        });
+            calculateOutstandingAmount();
+        }
+
+        // Set up the form on initial load
+        document.addEventListener('DOMContentLoaded', initializeForm);
 
         // Event listeners
-        document.getElementById('invoiceDate').addEventListener('change', calculateDaysOutstanding);
         document.getElementById('dueDate').addEventListener('change', calculateDaysOutstanding);
         document.getElementById('chfAmount').addEventListener('input', calculateOutstandingAmount);
         document.getElementById('amountPaid').addEventListener('input', calculateOutstandingAmount);
@@ -511,40 +527,31 @@
         document.getElementById('invoiceForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Collect form data
             const formData = new FormData(this);
             const jsonData = {};
 
-            // Add all form fields to JSON object
             for (const [key, value] of formData.entries()) {
                 jsonData[key] = value;
             }
 
-            // Add calculated fields
             jsonData.daysOutstanding = document.getElementById('daysOutstanding').value;
             jsonData.amountOutstanding = document.getElementById('amountOutstanding').value;
 
-            // Get selected aging bucket
             const agingBuckets = document.querySelectorAll('input[name="agingBucket"]:checked');
             jsonData.agingBucket = agingBuckets.length ? agingBuckets[0].value : '';
 
-            // Get selected status
             const statuses = document.querySelectorAll('input[name="status"]:checked');
             jsonData.status = statuses.length ? statuses[0].value : '';
 
-            // Display JSON output
             document.getElementById('jsonData').textContent = JSON.stringify(jsonData, null, 2);
             document.getElementById('jsonOutput').classList.add('show');
-
-            // Scroll to JSON output
             document.getElementById('jsonOutput').scrollIntoView({ behavior: 'smooth' });
         });
 
         // Reset form and hide JSON output
         document.getElementById('invoiceForm').addEventListener('reset', function() {
             document.getElementById('jsonOutput').classList.remove('show');
-            calculateDaysOutstanding();
-            calculateOutstandingAmount();
+            setTimeout(initializeForm, 0);
         });
     </script>
 </body>
